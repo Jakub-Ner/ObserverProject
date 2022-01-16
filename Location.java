@@ -5,7 +5,8 @@ import java.util.List;
 public class Location {
     private String URL = "https://api.openweathermap.org/data/2.5/weather?q=";
     private String locationName;
-    private String key = "&appid=f736ffeabd49a41f2009de7946d120d6";
+    private String key = Key.key;
+    public List<User> userList;
 
     public Location(String location){
         this.locationName = location;

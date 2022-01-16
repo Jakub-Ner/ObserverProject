@@ -6,38 +6,39 @@ import java.util.List;
 public class CSI {
     protected List<Location> locationList;
     private static int counter;
+    private Object locationsSemaphore = new Object();
 
     CSI() {
         locationList = new ArrayList<>();
     }
 
     public void run() throws InterruptedException {
-        counter = locationList.size();
-        List<Thread> threads = new ArrayList<>();
-        for (Location location : locationList) {
-            threads.add(new Thread(() -> getSendMeasurements(location)));
-            threads.get(threads.size()-1).start();
-        }
-        while (counter > 0) {
-            threads.get(threads.size() - 1).join();
+        synchronized (locationsSemaphore) {
+            counter = locationList.size();
+            for (Location location : locationList) {
+                new Thread(() -> getSendMeasurements(location)).run();
+            }
+            while (counter > 0) {
+                Thread.sleep(500);
+            }
         }
     }
 
-//    public updateLocationList(){
-//
-//    }
     public void getSendMeasurements(Location location) {
-        location.getMeasurements();
-
+        String measurements = location.getMeasurements();
+        System.out.println(measurements);
         end_thread();
     }
-    public synchronized void end_thread(){
-        counter -=1;
-    }
-    public void addLocation(String location) {
-        if (Location.findLocation(locationList, location) == null){
-            locationList.add(new Location(location));
 
+    public synchronized void end_thread() {
+        counter -= 1;
+    }
+
+    public void addLocation(String location) {
+        synchronized (locationsSemaphore) {
+            if (Location.findLocation(locationList, location) == null) {
+                locationList.add(new Location(location));
+            }
         }
     }
 }

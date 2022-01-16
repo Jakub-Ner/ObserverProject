@@ -10,15 +10,18 @@ public class KUPA {
 
     public KUPA() {
         userList = new ArrayList<>();
-//        userList.add(new User("admin"));
+
         csi = new CSI();
         new Thread(() -> {
             try {
-                csi.run();
+                while (true) {
+                    Thread.sleep(10000);
+                    csi.run();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        });
+        }).start();
     }
 
     public User logIn(String name) {
