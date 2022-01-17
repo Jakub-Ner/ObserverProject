@@ -77,15 +77,18 @@ public class Menu extends KUPA {
         String location = takeStringInput();
         boolean addedLocation = super.currentUser.subscribeLocation(location);
         if (addedLocation) {
-            super.csi.addLocation(location);
+            super.csi.addLocation(location, super.currentUser);
         }
     }
 
     public void unsubscribeLocation() {
         System.out.println("Which location would you unsubscribe?");
         String location = takeStringInput();
-        super.currentUser.unsubscribeLocation(location);
+        boolean removedLocation = super.currentUser.unsubscribeLocation(location);
+        if(removedLocation){
+            super.csi.removeLocation(location, super.currentUser);
 
+        }
     }
 
     public String takeStringInput() {

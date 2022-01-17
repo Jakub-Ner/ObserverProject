@@ -25,20 +25,37 @@ public class CSI {
     }
 
     public void getSendMeasurements(Location location) {
-        String measurements = location.getMeasurements();
-        System.out.println(measurements);
+        String measurement = location.getMeasurements();
+        Measurement serializedMeasurement = Measurement.serializeMeasurement(measurement);
+        sendMeasurements(location, serializedMeasurement);
         end_thread();
+    }
+    public void sendMeasurements(Location location, Measurement measurement) {
+        location.userList.forEach(user -> user.addMeasurements(measurement));
     }
 
     public synchronized void end_thread() {
         counter -= 1;
     }
 
-    public void addLocation(String location) {
+    public void removeLocation(String location, User user) {
         synchronized (locationsSemaphore) {
-            if (Location.findLocation(locationList, location) == null) {
-                locationList.add(new Location(location));
+            Location removalLocation = Location.findLocation(locationList, location);
+            removalLocation.userList.remove(user);
+            if(removalLocation.userList.size() == 0){
+                locationList.remove(removalLocation);
             }
+        }
+    }
+
+    public void addLocation(String location, User user) {
+        synchronized (locationsSemaphore) {
+            Location newLocation = new Location(location);
+            if (Location.findLocation(locationList, location) == null) {
+                locationList.add(newLocation);
+            }
+            newLocation.userList.add(user);
+
         }
     }
 }
